@@ -99,9 +99,9 @@ minwang@minwang-vm-ubuntu:~$ docker run -it --name dvwa -p 8081:80 nbsantos/dvwa
 ==> /var/log/apache2/other_vhosts_access.log <==
 ```
 
-![dvwa_setup](./dvwa_setup.png)
+![dvwa_setup](dvwa_setup.png)
 
-![dvwa](./dvwa.png)
+![dvwa](dvwa.png)
 
 
 
@@ -257,4 +257,4 @@ mysql> select * from table_Sec;
 mysql>
 ```
 
-![navicat](./navicat.png)
+![navicat](navicat.png)
