@@ -1,30 +1,30 @@
 **作业：**
 
-1. 文件上传
+#### 1. 文件上传 ####
 
-- 客户端绕过练习。
+##### 1.1 客户端绕过练习 #####
 
-1.1 禁用js
+- 禁用js
 
 ![pass-01-disable-js](images/pass-01-disable-js.png)
 
 ![phpinfo-page](images/phpinfo-page.png)
 
-1.2 后缀名绕过，先把一句话木马trojan.php改为 trojan.jpg 上传，使用burp抓包，再burp中改回php后缀后放行。
+
+- 后缀名绕过，先把一句话木马trojan.php改为 trojan.jpg 上传，使用burp抓包，再burp中改回php后缀后放行。
 
 ![trojan-burp](images/trojan-burp.png)
 
 ![trojan-phpinfo](images/trojan-phpinfo.png)
 
 
-
-1.3 修改前端代码，firefox浏览器中F12，删除 form 标签的 onsubmit 中checkFile事件即可成功上传。
+- 修改前端代码，firefox浏览器中F12，删除 form 标签的 onsubmit 中checkFile事件即可成功上传。
 
 ![onsubmit-checkfile](images/onsubmit-checkfile.png)
 
 
 
-- 服务端黑名单绕过：.htaccess 文件绕过。
+##### 1.2 服务端黑名单绕过：.htaccess 文件绕过 #####
 
 ```shell
 vim .htaccess
@@ -44,7 +44,7 @@ Pass-04 实验，上传.htaccess文件后，再上传geektime.jpg文件，成功
 
 
 
-- 服务端白名单绕过：%00 截断绕过，要求虚拟机中搭建实验环境，分别实现 GET、POST 方法的绕过。
+##### 1.3 服务端白名单绕过：%00 截断绕过，要求虚拟机中搭建实验环境，分别实现 GET、POST 方法的绕过 #####
 
 小皮面板暂时仅支持x86_64体系结构,退出安装..  Mac的php最低仍大于php5.3.4版本
 
@@ -52,7 +52,7 @@ Pass-04 实验，上传.htaccess文件后，再上传geektime.jpg文件，成功
 
 
 
-- 二次渲染绕过。
+##### 1.4 二次渲染绕过 #####
 
 Pass-17实验，先上传一张jpg图片，上传成功。下载显示的图片与原图对比hex
 
@@ -84,11 +84,11 @@ http://192.168.216.129:8083/upload-labs/upload/1974695249.jpg ，用hex Fiend查
 
 
 
-2. 文件包含
+#### 2. 文件包含 ####
 
-- DVWA 环境下包含其他目录的任意 3 个文件，要求使用相对路径。
+##### 2.1 DVWA 环境下包含其他目录的任意 3 个文件，要求使用相对路径。#####
 
-2.1 Low 状态下，可以使用../返回上级目录，所以可以多打几次../../../../ 回道根目录在输入/etc/passwd
+- Low 状态下，可以使用../返回上级目录，所以可以多打几次../../../../ 回道根目录在输入/etc/passwd
 
 ![low-dvwa-file1](images/low-dvwa-file1.png)
 
@@ -97,18 +97,16 @@ http://192.168.216.129:8083/upload-labs/upload/1974695249.jpg ，用hex Fiend查
 ![low-dvwa-phpinfo](images/low-dvwa-phpinfo.png)
 
 
-
-2.2 Medium 状态下会过滤`../` 为空，所以可以拼接为`..././`
+- Medium 状态下会过滤`../` 为空，所以可以拼接为`..././`
 
 ![medium-dvwa-file2](images/medium-dvwa-file2.png)
 
 
-
-2.3 Impossible 状态下，写死了file1.php，file2.php，file3.php，所以无法包含其他文件
-
+- Impossible 状态下，写死了file1.php，file2.php，file3.php，所以无法包含其他文件
 
 
-- 远程文件包含。
+
+##### 2.2 远程文件包含 #####
 
 把dvwa作为靶机（设置为low），upload-labs去攻击
 
@@ -149,7 +147,7 @@ phpinfo.php 文件后缀改成.txt 再次上传后尝试
 
 
 
-- 中间件日志包含绕过，要求使用蚁剑连接成功。
+##### 2.3 中间件日志包含绕过，要求使用蚁剑连接成功 #####
 
 在url的page后添加一句话木马，发现被浏览器进行url编码了，使用burp去还原一句话木马。
 
